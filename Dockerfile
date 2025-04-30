@@ -40,6 +40,17 @@ RUN a2enmod cgid \
 # 5) Copy your application code into Apache webroot
 COPY . /var/www/html/
 
+# 6) Create data directory, initialize SQLite DB and set perms
+RUN mkdir -p /var/www/html/data \
+ && sqlite3 /var/www/html/data/servers.db "\
+CREATE TABLE IF NOT EXISTS servers ( \
+  id   INTEGER PRIMARY KEY AUTOINCREMENT, \
+  name TEXT    NOT NULL, \
+  ip   TEXT    NOT NULL  \
+);" \
+ && chown -R www-data:www-data /var/www/html/data
+
+
 # 6) Make all Python scripts executable
 RUN find /var/www/html -type f -name '*.py' -exec chmod +x {} \;
 
