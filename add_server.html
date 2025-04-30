@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Server</title>
+</head>
+<body>
+  <h1>Add a New Server</h1>
+  <form action="/add_server.py" method="post">
+    <label>
+      Name:
+      <input type="text" name="name" required>
+    </label><br><br>
+    <label>
+      IP Address:
+      <input type="text" name="ip" required pattern="\d+\.\d+\.\d+\.\d+">
+    </label><br><br>
+    <button type="submit">Add Server</button>
+  </form>
+  <p><a href="/list_servers.py">Back to Server List</a></p>
+</body>
+</html>
