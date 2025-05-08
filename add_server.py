@@ -1,25 +1,29 @@
 #!/usr/bin/env python3
 import cgi
 import sqlite3
-import sys
+import os
 
-# Parse form data
-form = cgi.FieldStorage()
-name = form.getfirst('name', '').strip()
-ip   = form.getfirst('ip', '').strip()
+# 1) Read form fields “name” → owner, “ip” → instance_id
+form  = cgi.FieldStorage()
+owner = form.getfirst('name', '').strip()
+inst  = form.getfirst('ip',   '').strip()
 
-# Insert into the database if both fields are present
-if name and ip:
-    conn = sqlite3.connect('data/servers.db')
+# 2) If both were supplied, insert into servers(owner,description,instance_id,ready)
+if owner and inst:
+    # Build the path to your SQLite file
+    here    = os.path.dirname(__file__)
+    db_path = os.path.join(here, 'data', 'servers.db')
+
+    conn = sqlite3.connect(db_path)
     cur  = conn.cursor()
     cur.execute(
-        "INSERT INTO servers (name, ip) VALUES (?, ?)",
-        (name, ip)
+        "INSERT INTO servers (owner, description, instance_id, ready) VALUES (?, ?, ?, 1)",
+        (owner, '', inst)
     )
     conn.commit()
     conn.close()
 
-# Redirect back to the list
+# 3) Redirect back to the list page
 print("Status: 303 See Other")
 print("Location: /list_servers.py")
-print()  # End of headers
+print()   # end of headers

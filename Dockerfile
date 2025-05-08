@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     ca-certificates \
     apt-transport-https \
- && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/*
 
 # 2) Install Google Cloud SDK
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - \
@@ -51,9 +51,18 @@ CREATE TABLE IF NOT EXISTS servers ( \
 );" \
  && chmod -R 777 /var/www/html/data
 
-# 7) Make all Python CGI scripts executable
+# 7) Initialize sessions table
+RUN sqlite3 /var/www/html/data/servers.db "\
+CREATE TABLE IF NOT EXISTS sessions ( \
+  id          INTEGER PRIMARY KEY AUTOINCREMENT, \
+  session_id  TEXT    NOT NULL UNIQUE, \
+  username    TEXT    NOT NULL, \
+  created     TIMESTAMP DEFAULT CURRENT_TIMESTAMP \
+);"
+
+# 8) Make all Python CGI scripts executable
 RUN find /var/www/html -type f -name '*.py' -exec chmod +x {} \;
 
-# 8) Expose HTTP port & start Apache
+# 9) Expose HTTP port & start Apache
 EXPOSE 80
 CMD ["apache2ctl", "-D", "FOREGROUND"]
